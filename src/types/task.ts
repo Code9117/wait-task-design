@@ -12,22 +12,30 @@ export interface Task {
 
 export interface StatusConfig {
   key: TaskStatus;
-  label: string;
+  labelKey: 'statusWaits' | 'statusFail' | 'statusDone';
   color: string;
   bgColor: string;
   borderColor: string;
+  dotColor: string;
 }
 
 export const statusConfigs: StatusConfig[] = [
-  { key: 'waits', label: '等待', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' },
-  { key: 'fail', label: '失败', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200' },
-  { key: 'done', label: '成功', color: 'text-gray-500', bgColor: 'bg-gray-50', borderColor: 'border-gray-200' },
+  { key: 'waits', labelKey: 'statusWaits', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200', dotColor: 'bg-green-500' },
+  { key: 'fail', labelKey: 'statusFail', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200', dotColor: 'bg-red-500' },
+  { key: 'done', labelKey: 'statusDone', color: 'text-gray-500', bgColor: 'bg-gray-50', borderColor: 'border-gray-200', dotColor: 'bg-gray-400' },
 ];
 
-export const priorityConfigs: { key: Priority; label: string; color: string; badgeColor: string }[] = [
-  { key: 'urgent', label: '急', color: 'text-red-600', badgeColor: 'bg-red-100' },
-  { key: 'medium', label: '中', color: 'text-yellow-600', badgeColor: 'bg-yellow-100' },
-  { key: 'normal', label: '一般', color: 'text-gray-500', badgeColor: 'bg-gray-100' },
+export interface PriorityConfig {
+  key: Priority;
+  labelKey: 'priorityUrgent' | 'priorityMedium' | 'priorityNormal';
+  color: string;
+  badgeColor: string;
+}
+
+export const priorityConfigs: PriorityConfig[] = [
+  { key: 'urgent', labelKey: 'priorityUrgent', color: 'text-red-600', badgeColor: 'bg-red-100' },
+  { key: 'medium', labelKey: 'priorityMedium', color: 'text-yellow-600', badgeColor: 'bg-yellow-100' },
+  { key: 'normal', labelKey: 'priorityNormal', color: 'text-gray-500', badgeColor: 'bg-gray-100' },
 ];
 
 export const getPriorityByAI = (): Priority => {

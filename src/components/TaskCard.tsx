@@ -1,4 +1,7 @@
+'use client';
+
 import { Task, statusConfigs, priorityConfigs } from '@/types/task';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface TaskCardProps {
   task: Task;
@@ -6,6 +9,7 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onStatusChange }: TaskCardProps) {
+  const { t } = useI18n();
   const statusConfig = statusConfigs.find(s => s.key === task.status)!;
   const priorityConfig = priorityConfigs.find(p => p.key === task.priority)!;
   const otherStatuses = statusConfigs.filter(s => s.key !== task.status);
@@ -16,13 +20,13 @@ export default function TaskCard({ task, onStatusChange }: TaskCardProps) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className={`text-sm font-medium ${statusConfig.color}`}>
-              {statusConfig.label}
+              {t(statusConfig.labelKey)}
             </span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${priorityConfig.badgeColor} ${priorityConfig.color}`}>
-              {priorityConfig.label}
+              {t(priorityConfig.labelKey)}
             </span>
           </div>
-          <p className="text-gray-800 font-medium">{task.title}</p>
+          <p className="text-gray-800 font-medium">{t(task.title as any)}</p>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -32,7 +36,7 @@ export default function TaskCard({ task, onStatusChange }: TaskCardProps) {
             onClick={() => onStatusChange(task.id, status.key)}
             className={`text-xs px-3 py-1 rounded-full border ${status.borderColor} ${status.color} hover:${status.bgColor} transition-colors`}
           >
-            → {status.label}
+            → {t(status.labelKey)}
           </button>
         ))}
       </div>

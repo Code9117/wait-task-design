@@ -1,16 +1,20 @@
 'use client';
+
 import { useState } from 'react';
 import { Task, statusConfigs, getPriorityByAI, TaskStatus } from '@/types/task';
 import { mockTasks } from '@/data/mockTasks';
+import { useI18n } from '@/i18n/I18nProvider';
 import TaskColumn from '@/components/TaskColumn';
 import AddTaskModal from '@/components/AddTaskModal';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 export default function Home() {
+  const { t } = useI18n();
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
-    setTasks(prev => prev.map(task => 
+    setTasks(prev => prev.map(task =>
       task.id === taskId ? { ...task, status: newStatus } : task
     ));
   };
@@ -39,12 +43,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">智能任务管理</h1>
-              <p className="text-sm text-gray-500">AI 自动排序 · 实时状态流转</p>
+              <h1 className="text-2xl font-bold text-gray-800">{t('appTitle')}</h1>
+              <p className="text-sm text-gray-500">{t('appSubtitle')}</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500">
-                总任务: <span className="font-semibold text-gray-800">{tasks.length}</span>
+              <LocaleSwitcher />
+              <div className="text-sm text-gray-500 hidden sm:block">
+                {t('totalTasks')}: <span className="font-semibold text-gray-800">{tasks.length}</span>
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -53,7 +58,7 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="hidden sm:inline">新增任务</span>
+                <span className="hidden sm:inline">{t('addTask')}</span>
               </button>
             </div>
           </div>
