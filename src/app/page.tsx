@@ -12,12 +12,7 @@ export default function Home() {
   const { t } = useI18n();
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
-    setTasks(prev => prev.map(task =>
-      task.id === taskId ? { ...task, status: newStatus } : task
-    ));
-  };
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const handleAddTask = (title: string, status: TaskStatus) => {
     const newTask: Task = {
@@ -28,6 +23,25 @@ export default function Home() {
       createdAt: new Date(),
     };
     setTasks(prev => [...prev, newTask]);
+  };
+
+  const handleUpdateTask = (taskId: string, title: string) => {
+    setTasks(prev => prev.map(task =>
+      task.id === taskId ? { ...task, title } : task
+    ));
+  };
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const checkTaskExists = (title: string, excludeId?: string) => {
+    return tasks.some(task => 
+      task.id !== excludeId &&
+      (task.status === 'waits' || task.status === 'inProgress') && 
+      task.title === title
+    );
   };
 
   const getTasksByStatus = (status: TaskStatus) => {
@@ -72,7 +86,7 @@ export default function Home() {
               key={config.key}
               config={config}
               tasks={getTasksByStatus(config.key)}
-              onStatusChange={handleStatusChange}
+              onEdit={handleEditTask}
             />
           ))}
         </div>
@@ -89,8 +103,14 @@ export default function Home() {
 
       <AddTaskModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingTask(null);
+        }}
         onAdd={handleAddTask}
+        onUpdate={handleUpdateTask}
+        onCheckDuplicate={checkTaskExists}
+        task={editingTask}
       />
     </div>
   );

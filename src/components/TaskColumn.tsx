@@ -7,10 +7,10 @@ import TaskCard from './TaskCard';
 interface TaskColumnProps {
   config: StatusConfig;
   tasks: Task[];
-  onStatusChange: (taskId: string, status: Task['status']) => void;
+  onEdit?: (task: Task) => void;
 }
 
-export default function TaskColumn({ config, tasks, onStatusChange }: TaskColumnProps) {
+export default function TaskColumn({ config, tasks, onEdit }: TaskColumnProps) {
   const { t } = useI18n();
 
   return (
@@ -24,7 +24,7 @@ export default function TaskColumn({ config, tasks, onStatusChange }: TaskColumn
       </div>
       <div className="space-y-3">
         {tasks.map(task => (
-          <TaskCard key={task.id} task={task} onStatusChange={onStatusChange} />
+          <TaskCard key={task.id} task={task} onEdit={onEdit} />
         ))}
       </div>
     </div>

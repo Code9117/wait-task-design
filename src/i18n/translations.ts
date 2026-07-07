@@ -10,6 +10,8 @@ export const translations = {
 
     // Status
     statusWaits: 'Waiting',
+    statusInProgress: 'In Progress',
+    statusExecuteNow: 'Execute Now',
     statusFail: 'Failed',
     statusDone: 'Done',
 
@@ -27,6 +29,11 @@ export const translations = {
     aiSortLabel: 'AI Auto Sort:',
     cancel: 'Cancel',
     confirm: 'Confirm',
+    save: 'Save',
+    edit: 'Edit',
+    editTaskTitle: 'Edit Task',
+    taskNameRequired: 'Please enter task name',
+    taskAlreadyExists: 'Task already exists, please create another task',
 
     // Mock data
     task1: 'Data Analysis Task',
@@ -37,6 +44,8 @@ export const translations = {
     task6: 'Database Backup',
     task7: 'API Call Failed',
     task8: 'File Upload Timeout',
+    task9: 'Server Deployment',
+    task10: 'Security Audit',
   },
   zh: {
     // Header
@@ -47,6 +56,8 @@ export const translations = {
 
     // Status
     statusWaits: '等待',
+    statusInProgress: '进行中',
+    statusExecuteNow: '立即执行',
     statusFail: '失败',
     statusDone: '成功',
 
@@ -64,6 +75,11 @@ export const translations = {
     aiSortLabel: 'AI 自动排序:',
     cancel: '取消',
     confirm: '确认添加',
+    save: '保存',
+    edit: '编辑',
+    editTaskTitle: '编辑任务',
+    taskNameRequired: '请输入任务名称',
+    taskAlreadyExists: '任务已存在，请创建其他任务',
 
     // Mock data
     task1: '数据分析任务',
@@ -74,6 +90,8 @@ export const translations = {
     task6: '数据库备份',
     task7: '接口调用失败',
     task8: '文件上传超时',
+    task9: '服务器部署',
+    task10: '安全审计',
   },
 } as const;
 

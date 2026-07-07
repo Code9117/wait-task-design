@@ -1,4 +1,4 @@
-export type TaskStatus = 'waits' | 'done' | 'fail';
+export type TaskStatus = 'waits' | 'inProgress' | 'fail' | 'done';
 
 export type Priority = 'urgent' | 'medium' | 'normal';
 
@@ -12,7 +12,7 @@ export interface Task {
 
 export interface StatusConfig {
   key: TaskStatus;
-  labelKey: 'statusWaits' | 'statusFail' | 'statusDone';
+  labelKey: 'statusWaits' | 'statusInProgress' | 'statusFail' | 'statusDone' | 'statusExecuteNow';
   color: string;
   bgColor: string;
   borderColor: string;
@@ -21,8 +21,14 @@ export interface StatusConfig {
 
 export const statusConfigs: StatusConfig[] = [
   { key: 'waits', labelKey: 'statusWaits', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200', dotColor: 'bg-green-500' },
+  { key: 'inProgress', labelKey: 'statusInProgress', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', dotColor: 'bg-blue-500' },
   { key: 'fail', labelKey: 'statusFail', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200', dotColor: 'bg-red-500' },
   { key: 'done', labelKey: 'statusDone', color: 'text-gray-500', bgColor: 'bg-gray-50', borderColor: 'border-gray-200', dotColor: 'bg-gray-400' },
+];
+
+export const addTaskStatusOptions: StatusConfig[] = [
+  { key: 'waits', labelKey: 'statusWaits', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200', dotColor: 'bg-green-500' },
+  { key: 'inProgress', labelKey: 'statusExecuteNow', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', dotColor: 'bg-blue-500' },
 ];
 
 export interface PriorityConfig {
