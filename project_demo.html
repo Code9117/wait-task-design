@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱在事务 - Love in Tasks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .subtitle svg {
+            width: 20px;
+            height: 20px;
+            color: #667eea;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 48px;
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .hero-icon svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .hero-text h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .workflow-section {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .section-title svg {
+            width: 24px;
+            height: 24px;
+            color: #667eea;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 auto 16px;
+        }
+
+        .step-arrow {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .step-arrow {
+                display: block;
+                width: 40px;
+                height: 40px;
+                margin-top: 4px;
+                color: #ddd;
+            }
+        }
+
+        .step h4 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .tech-stack {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 24px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 16px;
+        }
+
+        .tech-item svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 12px;
+        }
+
+        .tech-item span {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .footer p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 32px;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-card {
+                padding: 32px;
+            }
+
+            .workflow-steps {
+                flex-direction: column;
+            }
+
+            .step-arrow {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </div>
+            <h1 class="title">爱在事务</h1>
+            <p class="subtitle">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Night Execution · Morning Result
+            </p>
+        </div>
+
+        <div class="hero-card">
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div class="hero-text">
+                    <h2>✨ 夜间智能执行</h2>
+                    <p>创建任务后无需等待，AI Agent 在夜间自动执行，次日清晨即可查看结果和状态。充分利用深夜低峰时段，享受更优惠的模型服务价格（如 DeepSeek 夜间服务）。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                </div>
+                <h3>多模型配置</h3>
+                <p>支持 LangChain AI Agent，可灵活配置不同模型（DeepSeek、OpenAI 等），根据成本和需求自由选择，充分利用夜间优惠服务。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                </div>
+                <h3>智能状态流转</h3>
+                <p>任务状态自动流转：等待 → 执行中 → 成功/失败。失败任务编辑后自动回流到等待队列，支持重新执行，减少手动操作。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3>夜间执行模式</h3>
+                <p>任务自动调度到夜间低峰时段执行，不占用白天工作时间。第二天早上打开应用即可查看完成结果，提升工作效率。</p>
+            </div>
+        </div>
+
+        <div class="workflow-section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                工作流程
+            </h2>
+            <div class="workflow-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>创建任务</h4>
+                    <p>白天忙碌时创建任务，设置任务内容和优先级</p>
+                </div>
+                <svg class="step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>夜间执行</h4>
+                    <p>AI Agent 在夜间自动执行任务，利用低峰优惠时段</p>
+                </div>
+                <svg class="step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>查看结果</h4>
+                    <p>次日清晨查看执行结果和状态，失败任务可编辑重试</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-stack">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                技术栈
+            </h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #000;">
+                        <path d="M20.924 7.625a1.523 1.523 0 00-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 00-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 001.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 002.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 002.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 00.387-1.575z"/>
+                    </svg>
+                    <span>Next.js</span>
+                </div>
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #61DAFB;">
+                        <path d="M20.283 4.096c-1.356-.441-2.82-.441-4.175 0l-3.65 1.228-2.437-3.654c-.441-.662-1.275-.886-2.003-.662l-3.654 1.228c-1.356.441-1.872 1.951-1.431 3.306l2.437 3.654-3.654 1.228c-.441 1.356.175 2.865 1.431 3.306l3.654 1.228-2.437 3.654c-.441.662-.217 1.487.662 2.003l3.654 1.228c1.356.441 2.82.441 4.175 0l3.65-1.228 2.437 3.654c.441.662 1.275.886 2.003.662l3.654-1.228c1.356-.441 1.872-1.951 1.431-3.306l-2.437-3.654 3.654-1.228c.441-1.356-.175-2.865-1.431-3.306l-3.654-1.228 2.437-3.654c.441-.662.217-1.487-.662-2.003l-3.654-1.228zM6.545 15.286l-2.163-3.245 6.318-2.106 2.163 3.245-6.318 2.106zm4.318-4.286l2.163-3.245 6.318 2.106-2.163 3.245-6.318-2.106zm2.163-4.286l2.163-3.245 6.318 2.106-2.163 3.245-6.318-2.106z"/>
+                    </svg>
+                    <span>React</span>
+                </div>
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #007ACC;">
+                        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                    </svg>
+                    <span>TypeScript</span>
+                </div>
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #06B6D4;">
+                        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                    </svg>
+                    <span>Tailwind</span>
+                </div>
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #010101;">
+                        <path d="M20.924 7.625a1.523 1.523 0 00-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 00-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 001.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 002.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 002.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 00.387-1.575z"/>
+                    </svg>
+                    <span>LangChain</span>
+                </div>
+                <div class="tech-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="color: #3369F3;">
+                        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                    </svg>
+                    <span>OpenAI</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>爱在事务 · Love in Tasks · 学习工作赛道</p>
+        </div>
+    </div>
+</body>
+</html>

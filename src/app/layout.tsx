@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Task Manager",
-  description: "AI-powered task management with real-time status flow",
+  title: "爱在事务 - Love in Tasks",
+  description: "AI agent task execution at night, check results in the morning",
 };
 
 export default function RootLayout({

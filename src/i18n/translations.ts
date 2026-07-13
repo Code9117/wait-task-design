@@ -3,10 +3,18 @@ export type Locale = 'en' | 'zh';
 export const translations = {
   en: {
     // Header
-    appTitle: 'Smart Task Manager',
-    appSubtitle: 'AI Auto Sort · Real-time Status Flow',
+    appTitle: 'Love in Tasks',
+    appSubtitle: 'Night Execution · Morning Result',
     totalTasks: 'Total',
     addTask: 'Add Task',
+    settings: 'Settings',
+    model: 'Model',
+    aiEnabled: 'AI Enabled',
+
+    // Hero
+    heroTitle: '{appTitle} - Night Smart Execution',
+    heroDescription: 'No need to wait after creating tasks. AI Agent executes automatically at night, and you can view results and status in the early morning. Make the most of late-night low-traffic hours and enjoy more favorable model service prices.',
+    heroSmartSchedule: 'Smart Scheduling',
 
     // Status
     statusWaits: 'Waiting',
@@ -49,10 +57,18 @@ export const translations = {
   },
   zh: {
     // Header
-    appTitle: '智能任务管理',
-    appSubtitle: 'AI 自动排序 · 实时状态流转',
+    appTitle: '爱在事务',
+    appSubtitle: '夜间执行 · 清晨收获',
     totalTasks: '总任务',
     addTask: '新增任务',
+    settings: '设置',
+    model: '模型',
+    aiEnabled: 'AI 已启用',
+
+    // Hero
+    heroTitle: '{appTitle} - 夜间智能执行',
+    heroDescription: '创建任务后无需等待，AI Agent 在夜间自动执行，次日清晨即可查看结果和状态。充分利用深夜低峰时段，享受更优惠的模型服务价格。',
+    heroSmartSchedule: '智能调度',
 
     // Status
     statusWaits: '等待',
