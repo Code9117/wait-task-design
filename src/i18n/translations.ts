@@ -42,6 +42,16 @@ export const translations = {
     editTaskTitle: 'Edit Task',
     taskNameRequired: 'Please enter task name',
     taskAlreadyExists: 'Task already exists, please create another task',
+    aiResult: 'AI Result',
+    noResult: 'No result available',
+    close: 'Close',
+
+    // Quota
+    quotaExceeded: 'Quota Exceeded',
+    quotaWarning: 'You have used all free API calls. Please configure your own API Key in settings.',
+    goToSettings: 'Go to Settings',
+    remainingCalls: 'Remaining calls: {count}',
+    execute: 'Execute',
 
     // Mock data
     task1: 'Data Analysis Task',
@@ -96,6 +106,16 @@ export const translations = {
     editTaskTitle: '编辑任务',
     taskNameRequired: '请输入任务名称',
     taskAlreadyExists: '任务已存在，请创建其他任务',
+    aiResult: 'AI 结果',
+    noResult: '暂无结果',
+    close: '关闭',
+
+    // Quota
+    quotaExceeded: '调用次数已用完',
+    quotaWarning: '您已用完所有免费API调用次数，请在设置中配置您自己的API Key。',
+    goToSettings: '前往设置',
+    remainingCalls: '剩余调用次数: {count}',
+    execute: '执行',
 
     // Mock data
     task1: '数据分析任务',

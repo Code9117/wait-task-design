@@ -8,9 +8,11 @@ interface TaskColumnProps {
   config: StatusConfig;
   tasks: Task[];
   onEdit?: (task: Task) => void;
+  onViewResult?: (task: Task) => void;
+  onExecute?: (task: Task) => void;
 }
 
-export default function TaskColumn({ config, tasks, onEdit }: TaskColumnProps) {
+export default function TaskColumn({ config, tasks, onEdit, onViewResult, onExecute }: TaskColumnProps) {
   const { t } = useI18n();
 
   return (
@@ -24,7 +26,7 @@ export default function TaskColumn({ config, tasks, onEdit }: TaskColumnProps) {
       </div>
       <div className="space-y-3">
         {tasks.map(task => (
-          <TaskCard key={task.id} task={task} onEdit={onEdit} />
+          <TaskCard key={task.id} task={task} onEdit={onEdit} onViewResult={onViewResult} onExecute={onExecute} />
         ))}
       </div>
     </div>

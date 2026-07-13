@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Task, statusConfigs, getPriorityByAI, TaskStatus, Priority } from '@/types/task';
 import { mockTasks } from '@/data/mockTasks';
 import { useI18n } from '@/i18n/I18nProvider';
 import TaskColumn from '@/components/TaskColumn';
 import AddTaskModal from '@/components/AddTaskModal';
+import TaskResultModal from '@/components/TaskResultModal';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import OpenAI from 'openai';
-import { initOpenAIClient, getOpenAIClient, SUPPORTED_MODELS, analyzeTaskPriority, ModelConfig } from '@/service';
+import { initOpenAIClient, getOpenAIClient, SUPPORTED_MODELS, analyzeTaskPriority, executeTask, ModelConfig, DEFAULT_API_KEY, MAX_FREE_CALLS, getRemainingCalls, isFreeQuotaExceeded } from '@/service';
 
 interface Settings {
   apiKey: string;
@@ -23,14 +24,34 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<Settings>({
     apiKey: '',
-    model: 'deepseek-v4-pro',
+    model: SUPPORTED_MODELS[0].id,
   });
-  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(!!DEFAULT_API_KEY);
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [selectedResultTask, setSelectedResultTask] = useState<Task | null>(null);
+  const [remainingCalls, setRemainingCalls] = useState(MAX_FREE_CALLS);
+  const [showQuotaWarning, setShowQuotaWarning] = useState(false);
+
+  useEffect(() => {
+    if (DEFAULT_API_KEY && !getOpenAIClient()) {
+      initOpenAIClient({
+        apiKey: DEFAULT_API_KEY,
+        model: SUPPORTED_MODELS[0].id,
+      });
+    }
+    setRemainingCalls(getRemainingCalls());
+  }, []);
+
+  const handleViewResult = (task: Task) => {
+    setSelectedResultTask(task);
+    setIsResultModalOpen(true);
+  };
 
   const handleSaveSettings = () => {
-    if (settings.apiKey.trim()) {
+    const apiKeyToUse = settings.apiKey.trim() || DEFAULT_API_KEY;
+    if (apiKeyToUse) {
       initOpenAIClient({
-        apiKey: settings.apiKey,
+        apiKey: apiKeyToUse,
         model: settings.model,
       });
       setAiEnabled(true);
@@ -40,6 +61,28 @@ export default function Home() {
     setIsSettingsOpen(false);
   };
 
+  const handleExecuteTask = async (task: Task) => {
+    if (!aiEnabled) return;
+
+    const client = getOpenAIClient();
+    if (!client) return;
+
+    if (!settings.apiKey.trim() && isFreeQuotaExceeded()) {
+      setShowQuotaWarning(true);
+      return;
+    }
+
+    setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'inProgress' as TaskStatus } : t));
+
+    try {
+      const result = await executeTask(client, task.title);
+      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'done' as TaskStatus, aiResult: result } : t));
+      setRemainingCalls(getRemainingCalls());
+    } catch {
+      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'fail' as TaskStatus } : t));
+    }
+  };
+
   const handleAddTask = async (title: string, status: TaskStatus) => {
     let priority: Priority = getPriorityByAI();
 
@@ -47,21 +90,48 @@ export default function Home() {
       const client = getOpenAIClient();
       if (client) {
         try {
-          priority = await analyzeTaskPriority(client, title);
+          if (!settings.apiKey.trim() && isFreeQuotaExceeded()) {
+            setShowQuotaWarning(true);
+            priority = getPriorityByAI();
+          } else {
+            priority = await analyzeTaskPriority(client, title);
+            setRemainingCalls(getRemainingCalls());
+          }
         } catch {
           priority = getPriorityByAI();
         }
       }
     }
 
+    const shouldExecute = status === 'inProgress' || priority === 'urgent';
+    const initialStatus = shouldExecute ? ('inProgress' as TaskStatus) : status;
+
     const newTask: Task = {
       id: Date.now().toString(),
       title,
-      status,
+      status: initialStatus,
       priority,
       createdAt: new Date(),
     };
     setTasks(prev => [...prev, newTask]);
+
+    if (shouldExecute && aiEnabled) {
+      const client = getOpenAIClient();
+      if (client) {
+        try {
+          if (!settings.apiKey.trim() && isFreeQuotaExceeded()) {
+            setShowQuotaWarning(true);
+            setTasks(prev => prev.map(t => t.id === newTask.id ? { ...t, status: 'waits' as TaskStatus } : t));
+          } else {
+            const result = await executeTask(client, title);
+            setTasks(prev => prev.map(t => t.id === newTask.id ? { ...t, status: 'done' as TaskStatus, aiResult: result } : t));
+            setRemainingCalls(getRemainingCalls());
+          }
+        } catch {
+          setTasks(prev => prev.map(t => t.id === newTask.id ? { ...t, status: 'fail' as TaskStatus } : t));
+        }
+      }
+    }
   };
 
   const handleUpdateTask = (taskId: string, title: string) => {
@@ -180,6 +250,8 @@ export default function Home() {
               config={config}
               tasks={getTasksByStatus(config.key)}
               onEdit={handleEditTask}
+              onViewResult={handleViewResult}
+              onExecute={handleExecuteTask}
             />
           ))}
         </div>
@@ -204,6 +276,15 @@ export default function Home() {
         onUpdate={handleUpdateTask}
         onCheckDuplicate={checkTaskExists}
         task={editingTask}
+      />
+
+      <TaskResultModal
+        isOpen={isResultModalOpen}
+        onClose={() => {
+          setIsResultModalOpen(false);
+          setSelectedResultTask(null);
+        }}
+        task={selectedResultTask}
       />
 
       <div
@@ -243,7 +324,7 @@ export default function Home() {
               <select
                 value={settings.model}
                 onChange={e => setSettings(prev => ({ ...prev, model: e.target.value }))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent color-[#333333]"
               >
                 {SUPPORTED_MODELS.map(model => (
                   <option key={model.id} value={model.id}>
@@ -270,6 +351,41 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div
+        className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity ${showQuotaWarning ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setShowQuotaWarning(false)}
+      >
+        <div
+          className={`bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 transform transition-all ${showQuotaWarning ? 'scale-100' : 'scale-95'}`}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-gray-800">{t('quotaExceeded')}</h2>
+          </div>
+          <p className="text-gray-600 mb-6">{t('quotaWarning')}</p>
+          <button
+            onClick={() => {
+              setShowQuotaWarning(false);
+              setIsSettingsOpen(true);
+            }}
+            className="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all"
+          >
+            {t('goToSettings')}
+          </button>
+        </div>
+      </div>
+
+      {!settings.apiKey.trim() && remainingCalls > 0 && (
+        <div className="fixed bottom-24 right-6 bg-white/90 backdrop-blur-sm shadow-lg rounded-lg px-4 py-2 text-sm text-gray-600">
+          {t('remainingCalls', { count: remainingCalls.toString() })}
+        </div>
+      )}
     </div>
   );
 }

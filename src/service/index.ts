@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import type { ChatCompletion } from "openai/resources";
+import { systemPrompt, renderUserPrompt, executionSystemPrompt, renderExecutionUserPrompt } from "./prompt";
 
 export interface ModelConfig {
   apiKey: string;
@@ -11,18 +12,44 @@ export const SUPPORTED_MODELS = [
   { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro" },
 ];
 
+export const MAX_FREE_CALLS = parseInt(process.env.NEXT_PUBLIC_MAX_FREE_CALLS || "5");
+export const DEFAULT_API_KEY = process.env.NEXT_PUBLIC_DEFAULT_API_KEY || "";
+
 let openaiClient: OpenAI | null = null;
 
 export function initOpenAIClient(config: ModelConfig): OpenAI {
   openaiClient = new OpenAI({
     baseURL: "https://api.deepseek.com/v1",
     apiKey: config.apiKey,
+    dangerouslyAllowBrowser: true,
   });
   return openaiClient;
 }
 
 export function getOpenAIClient(): OpenAI | null {
   return openaiClient;
+}
+
+function getCallCount(): number {
+  if (typeof window === "undefined") return 0;
+  const count = localStorage.getItem("ai_call_count");
+  return count ? parseInt(count, 10) : 0;
+}
+
+function incrementCallCount(): number {
+  if (typeof window === "undefined") return 0;
+  const current = getCallCount();
+  const next = current + 1;
+  localStorage.setItem("ai_call_count", next.toString());
+  return next;
+}
+
+export function getRemainingCalls(): number {
+  return Math.max(0, MAX_FREE_CALLS - getCallCount());
+}
+
+export function isFreeQuotaExceeded(): boolean {
+  return getCallCount() >= MAX_FREE_CALLS;
 }
 
 interface DeepSeekChatCompletionParams {
@@ -53,20 +80,29 @@ export async function analyzeTaskPriority(
   client: OpenAI,
   taskTitle: string
 ): Promise<"urgent" | "medium" | "normal"> {
-  const systemPrompt = `你是一个任务优先级分析助手。请根据任务标题判断其优先级：
-- urgent（紧急）：需要立即处理的重要任务
-- medium（中等）：需要在近期处理的任务
-- normal（普通）：常规任务，可稍后处理
-
-请直接返回优先级关键词，不要包含其他内容。`;
-
   const response = await getAIResponse(client, [
     { role: "system", content: systemPrompt },
-    { role: "user", content: `请分析以下任务的优先级：${taskTitle}` },
+    { role: "user", content: renderUserPrompt(taskTitle) },
   ]);
+
+  incrementCallCount();
 
   const result = response?.trim().toLowerCase() || "normal";
   if (result === "urgent") return "urgent";
   if (result === "medium") return "medium";
   return "normal";
+}
+
+export async function executeTask(
+  client: OpenAI,
+  taskTitle: string
+): Promise<string> {
+  const response = await getAIResponse(client, [
+    { role: "system", content: executionSystemPrompt },
+    { role: "user", content: renderExecutionUserPrompt(taskTitle) },
+  ]);
+
+  incrementCallCount();
+
+  return response?.trim() || "任务执行完成，但未返回具体结果。";
 }

@@ -8,6 +8,7 @@ export interface Task {
   status: TaskStatus;
   priority: Priority;
   createdAt: Date;
+  aiResult?: string;
 }
 
 export interface StatusConfig {

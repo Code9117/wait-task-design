@@ -6,17 +6,24 @@ import { useI18n } from '@/i18n/I18nProvider';
 interface TaskCardProps {
   task: Task;
   onEdit?: (task: Task) => void;
+  onViewResult?: (task: Task) => void;
+  onExecute?: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onEdit }: TaskCardProps) {
+export default function TaskCard({ task, onEdit, onViewResult, onExecute }: TaskCardProps) {
   const { t } = useI18n();
   const statusConfig = statusConfigs.find(s => s.key === task.status)!;
   const priorityConfig = priorityConfigs.find(p => p.key === task.priority)!;
 
   const canEdit = task.status === 'waits' || task.status === 'fail';
+  const canViewResult = task.status === 'done';
+  const canExecute = task.status === 'waits' || task.status === 'fail';
 
   return (
-    <div className={`${statusConfig.bgColor} ${statusConfig.borderColor} border rounded-lg p-4 mb-3 transition-all hover:shadow-md`}>
+    <div
+      className={`${statusConfig.bgColor} ${statusConfig.borderColor} border rounded-lg p-4 mb-3 transition-all hover:shadow-md ${canViewResult ? 'cursor-pointer' : ''}`}
+      onClick={() => canViewResult && onViewResult && onViewResult(task)}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
@@ -29,17 +36,31 @@ export default function TaskCard({ task, onEdit }: TaskCardProps) {
           </div>
           <p className="text-gray-800 font-medium">{task.title}</p>
         </div>
-        {canEdit && onEdit && (
-          <button
-            onClick={() => onEdit(task)}
-            className="text-gray-400 hover:text-blue-600 transition-colors ml-2"
-            title={t('edit')}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {canExecute && onExecute && (
+            <button
+              onClick={() => onExecute(task)}
+              className="text-gray-400 hover:text-green-600 transition-colors"
+              title={t('execute')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          )}
+          {canEdit && onEdit && (
+            <button
+              onClick={() => onEdit(task)}
+              className="text-gray-400 hover:text-blue-600 transition-colors ml-2"
+              title={t('edit')}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
